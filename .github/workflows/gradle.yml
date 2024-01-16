@@ -42,6 +42,7 @@ jobs:
         host: ${{ secrets.OCCUPY_SSH_HOST }}
         username: ${{ secrets.OCCUPY_SSH_USERNAME }}
         key: ${{ secrets.OCCUPY_SSH_KEY }}
+        passphrase: ${{secrets.OCCUPY_SSH_PASSPHRASE}}
         port: ${{ secrets.OCCUPY_SSH_PORT }}
         source: "build/libs/*.jar"
         target: "source"
@@ -53,6 +54,7 @@ jobs:
         host: ${{ secrets.OCCUPY_SSH_HOST }}
         username: ${{ secrets.OCCUPY_SSH_USERNAME }}
         key: ${{ secrets.OCCUPY_SSH_KEY }}
+        passphrase: ${{secrets.OCCUPY_SSH_PASSPHRASE}}
         port: ${{ secrets.OCCUPY_SSH_PORT }}
         script: |
             SOURCE_DIR=source/build/libs
