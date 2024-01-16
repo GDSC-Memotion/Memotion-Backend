@@ -1,0 +1,31 @@
+spring:
+
+  #Setting H2 DB
+  h2:
+    console:
+      enabled: true
+
+  #Setting DataSource
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/memotionDB;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  #Setting JPA
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show-sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        use_sql_comments: true
+
+#Setting Log Level
+logging:
+  level:
+    # Set hibernate log to debug level
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
