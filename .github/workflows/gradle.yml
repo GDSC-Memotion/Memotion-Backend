@@ -56,7 +56,7 @@ jobs:
         source: "build/libs/*.jar"
         target: "source"
         rm: true
-        
+    #delpoy by action_deploy.sh
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
