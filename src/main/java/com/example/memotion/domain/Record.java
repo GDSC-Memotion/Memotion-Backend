@@ -29,13 +29,11 @@ public class Record extends BaseEntity{
     @Enumerated(value = EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10)")
     private MoodEnum mood;
-    private String imageUrl;
 
     @Builder
-    public Record(String description, Member member, MoodEnum mood, String imageUrl) {
+    public Record(String description, Member member, MoodEnum mood) {
         this.description = description;
         this.member = member;
         this.mood = mood;
-        this.imageUrl = imageUrl;
     }
 }
