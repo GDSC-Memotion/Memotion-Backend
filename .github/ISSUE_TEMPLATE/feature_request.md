@@ -3,7 +3,7 @@ name: Feature request
 about: Suggest an idea for this project
 title: '[Feat] 기능명'
 labels: '✨Feature'
-assignees: '@rlagkswn00'
+assignees: 'rlagkswn00'
 
 ---
 
