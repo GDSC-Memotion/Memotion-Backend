@@ -17,7 +17,7 @@ public class Analysis extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Member member;
 
     @ManyToOne
     @JoinColumn(name = "record_id")
