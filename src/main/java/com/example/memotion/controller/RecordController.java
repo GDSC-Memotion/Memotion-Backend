@@ -27,8 +27,8 @@ public class RecordController {
     }
 
     @GetMapping
-    public BaseResponse<List<FindDailyRecordRes>> findDailyRecord(@RequestParam("period") String period) {
-        List<FindDailyRecordRes> dailyRecord = recordService.getDailyRecord(period);
+    public BaseResponse<List<FindDailyRecordRes>> getDailyRecord(@RequestParam("period") String period) {
+        List<FindDailyRecordRes> dailyRecord = recordService.findDailyRecord(period);
         return new BaseResponse<>(dailyRecord);
     }
 }

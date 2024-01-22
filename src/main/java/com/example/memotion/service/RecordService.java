@@ -53,7 +53,7 @@ public class RecordService {
         return save.getId();
     }
 
-    public List<FindDailyRecordRes> getDailyRecord(String period) {
+    public List<FindDailyRecordRes> findDailyRecord(String period) {
         List<FindDailyRecordRes> result = new ArrayList<>();
         LocalDate localdate = periodToLocalDate(period);
         log.debug(localdate.toString());
