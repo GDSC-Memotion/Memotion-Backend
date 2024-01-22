@@ -1,2 +1,0 @@
-INSERT INTO member(id, name, profile_image, password, email)
-VALUES (1, 'hanju','https://www.fashionplus.co.kr/goods/detail/http-proxy?requestUrl=https://img.fashionplus.co.kr/mall/event/231222/%EB%B0%B0%EB%84%88%EC%9D%B4%EB%AF%B8%EC%A7%80_16918.jpg','1234','qwe@naver.com');
