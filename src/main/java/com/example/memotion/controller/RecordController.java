@@ -31,4 +31,9 @@ public class RecordController {
         List<FindDailyRecordRes> dailyRecord = recordService.findDailyRecord(period);
         return new BaseResponse<>(dailyRecord);
     }
+
+    @GetMapping("/calendar")
+    public BaseResponse<> getCalendarRecord(@RequestParam("period") String period) {
+        return new BaseResponse<>("Example");
+    }
 }
