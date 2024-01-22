@@ -33,7 +33,7 @@ public class RecordController {
     }
 
     @GetMapping("/calendar")
-    public BaseResponse<> getCalendarRecord(@RequestParam("period") String period) {
-        return new BaseResponse<>("Example");
+    public BaseResponse getCalendarRecord(@RequestParam("period") String period) {
+        return new BaseResponse("Example");
     }
 }
