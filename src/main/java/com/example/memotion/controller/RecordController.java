@@ -3,6 +3,7 @@ package com.example.memotion.controller;
 import com.example.memotion.common.BaseResponse;
 import com.example.memotion.dto.CreateRecordReq;
 import com.example.memotion.dto.CreateRecordRes;
+import com.example.memotion.dto.FindCalendarRecordRes;
 import com.example.memotion.dto.FindDailyRecordRes;
 import com.example.memotion.service.RecordService;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +35,8 @@ public class RecordController {
     }
 
     @GetMapping("/calendar")
-    public BaseResponse getCalendarRecord(@RequestParam("period") String period) {
-        return new BaseResponse("Example");
+    public BaseResponse<FindCalendarRecordRes> getCalendarRecord(@RequestParam("period") String period) {
+        return new BaseResponse(recordService.findCalendarRecord(period));
     }
 
     @GetMapping("/{diaryId}")
