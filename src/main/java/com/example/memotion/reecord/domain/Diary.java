@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -48,9 +49,10 @@ public class Diary extends BaseEntity {
     private STATUS status = STATUS.ACTIVATE;
 
     @Builder
-    public Diary(Long id, String description, Member member) {
+    public Diary(Long id, String description, Member member, LocalDateTime createdAt) {
         this.id = id;
         this.description = description;
         this.member = member;
+        this.setCreatedAt(createdAt);
     }
 }
