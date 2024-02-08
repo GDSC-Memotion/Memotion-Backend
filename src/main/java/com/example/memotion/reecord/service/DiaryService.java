@@ -26,7 +26,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -57,6 +59,7 @@ public class DiaryService {
         return new CreateDiaryRes(savedDiary.getId());
     }
 
+    @Transactional(readOnly = true)
     public List<FindDailyDiaryRes> findDailyDiary(String period) {
         List<FindDailyDiaryRes> result = new ArrayList<>();
         LocalDate localdate = periodToLocalDate(period);
@@ -73,55 +76,29 @@ public class DiaryService {
         return result;
     }
 
+    @Transactional(readOnly = true)
     public FindCalendarDiaryRes findCalendarDiary(String period) {
         final int dateCapacity = 32;
 
         LocalDateTime localDateTime = periodToLocalDateTime(period);
         List<DailyEmotionAvgDTO> dailyEmotionAvgs = diaryRepository.findDiaryByCalendar(localDateTime, localDateTime.plusMonths(1));
         log.info(dailyEmotionAvgs.toString());
-        List<String> emotions = initEmotionList(dateCapacity);
-        log.info("size: " + emotions.size());
 
-        emotions.add(0, "");
+        Map<Integer, String> emotions = new HashMap<>();
+        log.info("size: " + emotions.size());
 
         for (DailyEmotionAvgDTO dailyEmotionAvgDTO : dailyEmotionAvgs) {
             String day = dailyEmotionAvgDTO.getCreateDate().split("-")[2];
             String maxEmotionName = dailyEmotionAvgDTO.getMaxEmotionName();
-            emotions.add(Integer.parseInt(day), maxEmotionName);
+            emotions.put(Integer.parseInt(day), maxEmotionName);
         }
 
         return new FindCalendarDiaryRes(emotions);
     }
 
-    private List<String> initEmotionList(int capacity) {
-        ArrayList<String> newList = new ArrayList<>();
-        for (int i = 0; i < capacity; i++) {
-            newList.add("");
-        }
-        return newList;
-    }
 
-    private LocalDateTime periodToLocalDateTime(String period) {
-        final String FIRST_DATE = "01";
-        LocalDate localDate = periodToLocalDate(period + FIRST_DATE);
-        return LocalDateTime.of(localDate, LocalTime.MIN);
-    }
 
-    private LocalDate periodToLocalDate(String period) {
-        return LocalDate.of(2000 + Integer.parseInt(period.substring(0, 2)),
-                Integer.parseInt(period.substring(2, 4)),
-                Integer.parseInt(period.substring(4, 6)));
-    }
-
-    public DeleteDiaryRes deleteDiary(Long diaryId) {
-        Diary diary = diaryRepository.findById(diaryId)
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디 값의 일기기록이 없습니다."));
-
-        diary.setStatus(STATUS.DEACTIVATE);
-
-        return new DeleteDiaryRes(diary.getId());
-    }
-
+    @Transactional(readOnly = true)
     public FindDiaryDetailRes findDetailDiary(Long diaryId) {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new NoSuchElementException("해당 아이디 값의 일기 기록이 없습니다."));
@@ -153,6 +130,15 @@ public class DiaryService {
                 .build();
     }
 
+    public DeleteDiaryRes deleteDiary(Long diaryId) {
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new NoSuchElementException("해당 아이디 값의 일기기록이 없습니다."));
+
+        diary.setStatus(STATUS.DEACTIVATE);
+
+        return new DeleteDiaryRes(diary.getId());
+    }
+
     public ModifyDiaryRes modifyDiary(Long diaryId, ModifyDiaryReq modifyDiaryReq) {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new NoSuchElementException("해당 아이디 값의 일기 기록이 없습니다."));
@@ -168,4 +154,25 @@ public class DiaryService {
 
         return new ModifyDiaryRes(diary.getId());
     }
+
+    private List<String> initEmotionList(int capacity) {
+        ArrayList<String> newList = new ArrayList<>();
+        for (int i = 0; i < capacity; i++) {
+            newList.add("");
+        }
+        return newList;
+    }
+
+    private LocalDateTime periodToLocalDateTime(String period) {
+        final String FIRST_DATE = "01";
+        LocalDate localDate = periodToLocalDate(period + FIRST_DATE);
+        return LocalDateTime.of(localDate, LocalTime.MIN);
+    }
+
+    private LocalDate periodToLocalDate(String period) {
+        return LocalDate.of(2000 + Integer.parseInt(period.substring(0, 2)),
+                Integer.parseInt(period.substring(2, 4)),
+                Integer.parseInt(period.substring(4, 6)));
+    }
+
 }
