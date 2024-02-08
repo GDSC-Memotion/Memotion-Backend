@@ -1,6 +1,7 @@
 package com.example.memotion.reecord.service;
 
 import com.example.memotion.common.domain.STATUS;
+import com.example.memotion.common.exception.NotFoundDiaryException;
 import com.example.memotion.image.domain.Image;
 import com.example.memotion.image.repository.ImageRepository;
 import com.example.memotion.member.domain.Member;
@@ -124,7 +125,8 @@ public class DiaryService {
 
     public FindDiaryDetailRes findDetailDiary(Long diaryId) {
         Diary diary = diaryRepository.findById(diaryId)
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디 값의 일기 기록이 없습니다."));
+                .orElseThrow(NotFoundDiaryException::new);
+
         List<Image> diaryImages = diary.getImages();
         List<String> imageUris = diaryImages.stream()
                 .map(Image::getUri)
@@ -155,7 +157,7 @@ public class DiaryService {
 
     public ModifyDiaryRes modifyDiary(Long diaryId, ModifyDiaryReq modifyDiaryReq) {
         Diary diary = diaryRepository.findById(diaryId)
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디 값의 일기 기록이 없습니다."));
+                .orElseThrow(NotFoundDiaryException::new);
 
         diary.setDescription(modifyDiaryReq.getDescription());
         imageRepository.deleteImageByDiary(diary);
