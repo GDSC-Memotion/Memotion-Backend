@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +45,11 @@ public class DiaryService {
     public CreateDiaryRes addDiary(CreateDiaryReq createDiaryReq) {
         Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new NoSuchElementException());
+        LocalDateTime createdAt = stringTime2LocalDateTime(createDiaryReq.getTime());
         Diary diary = Diary.builder()
                 .description(createDiaryReq.getDescription())
                 .member(member)
+                .createdAt(createdAt)
                 .build();
         List<String> imageUris = createDiaryReq.getImageUris().stream()
                 .map(e -> e.toString()).toList();
@@ -58,6 +61,18 @@ public class DiaryService {
                 .forEach(image -> imageRepository.save(image));
 
         return new CreateDiaryRes(savedDiary.getId());
+    }
+
+    private LocalDateTime stringTime2LocalDateTime(String time) {
+        //Time Structure : YYYY.MM.DD MON HH:MM:SS
+        String[] splitTime = time.split(" ");
+        List<Integer> dates = Arrays.stream(splitTime[0].split("\\."))
+                .map(Integer::parseInt)
+                .toList();
+        List<Integer> times = Arrays.stream(splitTime[2].split(":"))
+                .map(Integer::parseInt)
+                .toList();
+        return LocalDateTime.of(dates.get(0),dates.get(1),dates.get(2),times.get(0),times.get(1),times.get(2));
     }
 
     @Transactional(readOnly = true)
@@ -96,8 +111,6 @@ public class DiaryService {
 
         return new FindCalendarDiaryRes(emotions);
     }
-
-
 
     @Transactional(readOnly = true)
     public FindDiaryDetailRes findDetailDiary(Long diaryId) {
