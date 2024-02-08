@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateDiaryRes {
     private Long id;
+    private String emotion;
 }
