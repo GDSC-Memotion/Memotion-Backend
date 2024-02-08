@@ -12,4 +12,5 @@ import java.util.List;
 public class CreateDiaryReq {
     private String description;
     private List<String> imageUris;
+    private String time;
 }

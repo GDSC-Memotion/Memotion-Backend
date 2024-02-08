@@ -7,6 +7,7 @@ import com.example.memotion.member.domain.Member;
 import com.example.memotion.member.repository.MemberRepository;
 import com.example.memotion.reecord.domain.Diary;
 import com.example.memotion.reecord.dto.CreateDiaryReq;
+import com.example.memotion.reecord.dto.CreateDiaryRes;
 import com.example.memotion.reecord.dto.DailyEmotionAvgDTO;
 import com.example.memotion.reecord.dto.DeleteDiaryRes;
 import com.example.memotion.reecord.dto.DiaryAnalysisResultDTO;
@@ -37,7 +38,7 @@ public class DiaryService {
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
 
-    public Long addDiary(CreateDiaryReq createDiaryReq) {
+    public CreateDiaryRes addDiary(CreateDiaryReq createDiaryReq) {
         Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new NoSuchElementException());
         Diary diary = Diary.builder()
@@ -53,7 +54,7 @@ public class DiaryService {
                 .map(uri -> new Image(uri, savedDiary))
                 .forEach(image -> imageRepository.save(image));
 
-        return savedDiary.getId();
+        return new CreateDiaryRes(savedDiary.getId());
     }
 
     public List<FindDailyDiaryRes> findDailyDiary(String period) {

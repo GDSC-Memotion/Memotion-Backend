@@ -31,7 +31,7 @@ public class DiaryController {
 
     @PostMapping
     public BaseResponse<CreateDiaryRes> createDiary(@RequestBody CreateDiaryReq createDiaryReq){
-        return new BaseResponse(new CreateDiaryRes(diaryService.addDiary(createDiaryReq)));
+        return new BaseResponse(diaryService.addDiary(createDiaryReq));
     }
 
     @GetMapping
