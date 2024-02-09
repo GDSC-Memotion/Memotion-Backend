@@ -62,7 +62,8 @@ public class DiaryService {
                 .map(uri -> new Image(uri, savedDiary))
                 .forEach(image -> imageRepository.save(image));
 
-        return new CreateDiaryRes(savedDiary.getId());
+        //TODO : 파이썬 서버와의 통신 및 분석 결과 저장 후 반환해야 함
+        return new CreateDiaryRes(savedDiary.getId(), "anger");
     }
 
     private LocalDateTime stringTime2LocalDateTime(String time) {
