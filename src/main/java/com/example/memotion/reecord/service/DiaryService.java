@@ -2,6 +2,7 @@ package com.example.memotion.reecord.service;
 
 import com.example.memotion.common.domain.STATUS;
 import com.example.memotion.common.exception.NotFoundDiaryException;
+import com.example.memotion.common.exception.NotFoundMemberException;
 import com.example.memotion.image.domain.Image;
 import com.example.memotion.image.repository.ImageRepository;
 import com.example.memotion.member.domain.Member;
@@ -44,7 +45,8 @@ public class DiaryService {
 
     public CreateDiaryRes addDiary(CreateDiaryReq createDiaryReq) {
         Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new NoSuchElementException());
+                .orElseThrow(NotFoundMemberException::new);
+
         LocalDateTime createdAt = stringTime2LocalDateTime(createDiaryReq.getTime());
         Diary diary = Diary.builder()
                 .description(createDiaryReq.getDescription())

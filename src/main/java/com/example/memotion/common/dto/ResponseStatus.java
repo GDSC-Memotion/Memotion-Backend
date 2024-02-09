@@ -18,7 +18,7 @@ public enum ResponseStatus {
      * 2000: 클라이언트 Request 오류 (BAD_REQUEST)
      */
     BAD_REQUEST(2000, HttpStatus.BAD_REQUEST.value(), "유효하지 않은 요청입니다."),
-    URL_NOT_FOUND(2001, HttpStatus.BAD_REQUEST.value(), "유효하지 않은 URL 입니다."),
+    NOT_FOUND_MEMBER(2001, HttpStatus.NOT_FOUND.value(), "찾을 수 없는 사용자입니다."),
     METHOD_NOT_ALLOWED(2002, HttpStatus.METHOD_NOT_ALLOWED.value(), "해당 URL에서는 지원하지 않는 HTTP Method 입니다."),
     NOT_FOUND_DIARY(2003, HttpStatus.NOT_FOUND.value(), "찾을 수 없는 기록입니다."),
 
