@@ -3,14 +3,13 @@ package com.example.memotion.reecord.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
+import lombok.ToString;
 
 @Getter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateDiaryReq {
     private String description;
-    private List<String> imageUris;
     private String time;
 }

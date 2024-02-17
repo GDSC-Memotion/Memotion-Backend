@@ -3,6 +3,7 @@ package com.example.memotion.reecord.service;
 import com.example.memotion.common.domain.STATUS;
 import com.example.memotion.common.exception.NotFoundDiaryException;
 import com.example.memotion.common.exception.NotFoundMemberException;
+import com.example.memotion.gcp.service.CloudStorageService;
 import com.example.memotion.image.domain.Image;
 import com.example.memotion.image.repository.ImageRepository;
 import com.example.memotion.member.domain.Member;
@@ -23,16 +24,25 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -42,8 +52,9 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
+    private final CloudStorageService cloudStorageService;
 
-    public CreateDiaryRes addDiary(CreateDiaryReq createDiaryReq) {
+    public CreateDiaryRes addDiary(CreateDiaryReq createDiaryReq, List<MultipartFile> images) throws IOException {
         Member member = memberRepository.findById(1L)
                 .orElseThrow(NotFoundMemberException::new);
 
@@ -53,8 +64,14 @@ public class DiaryService {
                 .member(member)
                 .createdAt(createdAt)
                 .build();
-        List<String> imageUris = createDiaryReq.getImageUris().stream()
-                .map(e -> e.toString()).toList();
+
+        List<String> imageUris = new ArrayList<>();
+
+        for (MultipartFile image : images) {
+//            String imageUri = cloudStorageService.uploadMultipartFileToCloudStorage(image);
+            String imageUri = saveFileToLocalServer(image);
+            imageUris.add(imageUri);
+        }
 
         Diary savedDiary = diaryRepository.save(diary);
 
@@ -66,6 +83,24 @@ public class DiaryService {
         return new CreateDiaryRes(savedDiary.getId(), "anger");
     }
 
+    private String saveFileToLocalServer(MultipartFile image) {
+        String uniqueFileName = generateUniqueFileName(image.getOriginalFilename());
+        Path filePath = Paths.get("temp" + File.separator + uniqueFileName);
+        try {
+            Files.copy(image.getInputStream(), filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return filePath.toString();
+    }
+
+    private String generateUniqueFileName(String originalFileName) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        String timestamp = dateFormat.format(new Date());
+        String uuid = UUID.randomUUID().toString();
+        return uuid + "_" + timestamp + "_" + originalFileName;
+    }
+
     private LocalDateTime stringTime2LocalDateTime(String time) {
         //Time Structure : YYYY.MM.DD MON HH:MM:SS
         String[] splitTime = time.split(" ");
@@ -75,7 +110,7 @@ public class DiaryService {
         List<Integer> times = Arrays.stream(splitTime[2].split(":"))
                 .map(Integer::parseInt)
                 .toList();
-        return LocalDateTime.of(dates.get(0),dates.get(1),dates.get(2),times.get(0),times.get(1),times.get(2));
+        return LocalDateTime.of(dates.get(0), dates.get(1), dates.get(2), times.get(0), times.get(1), times.get(2));
     }
 
     @Transactional(readOnly = true)
