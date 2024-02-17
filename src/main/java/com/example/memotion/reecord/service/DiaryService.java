@@ -192,18 +192,39 @@ public class DiaryService {
         return new DeleteDiaryRes(diary.getId());
     }
 
-    public ModifyDiaryRes modifyDiary(Long diaryId, ModifyDiaryReq modifyDiaryReq) {
+    public ModifyDiaryRes modifyDiary(Long diaryId, ModifyDiaryReq modifyDiaryReq, List<MultipartFile> images) {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(NotFoundDiaryException::new);
 
-        diary.setDescription(modifyDiaryReq.getDescription());
+        //기존 이미지 경로 찾기
+        List<Image> presentImages = diary.getImages();
+
+        //기존 경로에 있는 이미지 삭제
+        for (Image image : presentImages) {
+            //UUID가 포함된 파일이름을 디코딩해줍니다.
+            File file = new File(image.getUri());
+            boolean result = file.delete();
+            log.info("DELETE IMAGE: " + file.getAbsolutePath());
+            log.info("RESULT : " + result);
+        }
+
+        //DB 기록 삭제
         imageRepository.deleteImageByDiary(diary);
-        List<String> imageUris = modifyDiaryReq.getImageUris();
+
+        List<String> imageUris = new ArrayList<>();
+
+        //새 사진 로컬 저장
+        for (MultipartFile image : images) {
+//            String imageUri = cloudStorageService.uploadMultipartFileToCloudStorage(image);
+            String imageUri = saveFileToLocalServer(image);
+            imageUris.add(imageUri);
+        }
+
+        //새 사진 경로 DB 추가
         imageUris.stream()
                 .map(uri -> new Image(uri, diary))
                 .forEach(image -> imageRepository.save(image));
-        List<String> uris = diary.getImages().stream()
-                .map(image -> image.getUri()).toList();
+        diary.setDescription(modifyDiaryReq.getDescription());
 
         return new ModifyDiaryRes(diary.getId());
     }
