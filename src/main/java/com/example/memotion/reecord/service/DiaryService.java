@@ -38,9 +38,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -125,7 +123,7 @@ public class DiaryService {
             List<String> imageUris = diary.getImages().stream()
                     .map(diaryImage ->
                             diaryImage.getUri()).toList();
-            result.add(FindDailyDiaryRes.of(diary, imageUris));
+            result.add(FindDailyDiaryRes.of(diary, imageUris, "anger"));
         }
         return result;
     }
@@ -137,14 +135,18 @@ public class DiaryService {
         LocalDateTime localDateTime = periodToLocalDateTime(period);
         List<DailyEmotionAvgDTO> dailyEmotionAvgs = diaryRepository.findDiaryByCalendar(localDateTime, localDateTime.plusMonths(1));
         log.info(dailyEmotionAvgs.toString());
+        List<String> emotions = initEmotionList(dateCapacity);
+        log.info("size: " + emotions.size());
 
-        Map<Integer, String> emotions = new HashMap<>();
+        emotions.add(0, "");
+
+//        Map<Integer, String> emotions = new HashMap<>();
         log.info("size: " + emotions.size());
 
         for (DailyEmotionAvgDTO dailyEmotionAvgDTO : dailyEmotionAvgs) {
             String day = dailyEmotionAvgDTO.getCreateDate().split("-")[2];
             String maxEmotionName = dailyEmotionAvgDTO.getMaxEmotionName();
-            emotions.put(Integer.parseInt(day), maxEmotionName);
+            emotions.add(Integer.parseInt(day), maxEmotionName);
         }
 
         return new FindCalendarDiaryRes(emotions);
@@ -169,7 +171,6 @@ public class DiaryService {
                 .disgust(0.0)
                 .surprise(0.0)
                 .sadness(0.0)
-                .emotion("anger")
                 .build();
 
         // TODO : 유튜브 API 수정 필요
@@ -180,6 +181,8 @@ public class DiaryService {
                 .analysisResult(diaryAnalysisResultDTO)
                 .youtubeUri("https://www.youtube.com/watch?v=BBdC1rl5sKY&pp=ygUa7Jyk7ZWYIOyCrOqxtOydmCDsp4Dtj4nshKA%3D")
                 .youtubeMusicUri("https://music.youtube.com/watch?v=BBdC1rl5sKY&pp=ygUa7Jyk7ZWYIOyCrOqxtOydmCDsp4Dtj4nshKA%3D")
+                .createdAt(diary.getCreatedAt())
+                .emotion("anger")
                 .build();
     }
 

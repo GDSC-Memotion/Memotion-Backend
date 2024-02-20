@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class FindCalendarDiaryRes {
 
-    private Map<Integer, String> emotions;
+    private List<String> emotions;
 }

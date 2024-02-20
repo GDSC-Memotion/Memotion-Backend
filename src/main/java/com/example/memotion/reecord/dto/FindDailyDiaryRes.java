@@ -11,22 +11,25 @@ public class FindDailyDiaryRes {
     private Long id;
     private String description;
     private Long memberId;
+    private String mood;
     private List<String> imageUris;
 
-    public static FindDailyDiaryRes of(Diary diary, List<String> imageUris) {
+    public static FindDailyDiaryRes of(Diary diary, List<String> imageUris, String mood) {
         return FindDailyDiaryRes.builder()
                 .id(diary.getId())
                 .memberId(diary.getMember().getId())
                 .imageUris(imageUris)
                 .description(diary.getDescription())
+                .mood(mood)
                 .build();
     }
     @Builder
 
-    public FindDailyDiaryRes(Long id, String description, Long memberId, List<String> imageUris) {
+    public FindDailyDiaryRes(Long id, String description, Long memberId, String mood, List<String> imageUris) {
         this.id = id;
         this.description = description;
         this.memberId = memberId;
+        this.mood = mood;
         this.imageUris = imageUris;
     }
 }

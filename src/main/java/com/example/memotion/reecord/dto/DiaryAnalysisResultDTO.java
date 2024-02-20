@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class DiaryAnalysisResultDTO {
-    private String emotion;
+
     private double joy;
     private double neutral;
     private double sadness;
@@ -17,8 +17,7 @@ public class DiaryAnalysisResultDTO {
     private double disgust;
 
     @Builder
-    public DiaryAnalysisResultDTO(String emotion, double joy, double neutral, double sadness, double surprise, double anger, double fear, double disgust) {
-        this.emotion = emotion;
+    public DiaryAnalysisResultDTO(double joy, double neutral, double sadness, double surprise, double anger, double fear, double disgust) {
         this.joy = joy;
         this.neutral = neutral;
         this.sadness = sadness;
