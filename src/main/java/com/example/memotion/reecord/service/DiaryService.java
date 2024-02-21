@@ -71,8 +71,8 @@ public class DiaryService {
         List<String> imageUris = new ArrayList<>();
 
         for (MultipartFile image : images) {
-//            String imageUri = cloudStorageService.uploadMultipartFileToCloudStorage(image);
-            String imageUri = saveFileToLocalServer(image);
+            String imageUri = cloudStorageService.uploadMultipartFileToCloudStorage(image);
+//            String imageUri = saveFileToLocalServer(image);
             imageUris.add(imageUri);
         }
         Diary savedDiary = diaryRepository.save(diary);

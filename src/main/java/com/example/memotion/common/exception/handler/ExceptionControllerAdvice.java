@@ -26,10 +26,10 @@ public class ExceptionControllerAdvice {
                 .body(new BaseResponse(ResponseStatus.NOT_FOUND_DIARY));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<BaseResponse> baseErrorResponse(Exception e){
-        log.error(e.getMessage());
-        return ResponseEntity.status(ResponseStatus.NOT_DEFINED_ERROR.getStatus())
-                .body(new BaseResponse(ResponseStatus.NOT_DEFINED_ERROR, "정의되지 않은 서버 에러입니다."));
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<BaseResponse> baseErrorResponse(Exception e){
+//        log.error(e.getMessage());
+//        return ResponseEntity.status(ResponseStatus.NOT_DEFINED_ERROR.getStatus())
+//                .body(new BaseResponse(ResponseStatus.NOT_DEFINED_ERROR, "정의되지 않은 서버 에러입니다."));
+//    }
 }
