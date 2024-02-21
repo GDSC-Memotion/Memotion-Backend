@@ -33,6 +33,15 @@ jobs:
     - name: Make application.yml
       run: |
         cd ./src/main/resources
+        touch ./GCS_Key.json
+        
+        echo "${{ secrets.GCS_KEY.JSON }}" >> ./GCS_KEY.json
+      shell: bash
+
+    # GCS key 파일 생성
+    - name: Make GCS Key.json
+      run: |
+        cd ./src/main/resources
         touch ./application.yml
         
         echo "${{ secrets.DEPLOYMENT_YML }}" >> ./application.yml
