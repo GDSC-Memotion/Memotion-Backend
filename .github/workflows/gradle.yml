@@ -35,7 +35,7 @@ jobs:
         cd ./src/main/resources
         touch ./GCS_Key.json
         
-        echo "${{ secrets.GCS_KEY.JSON }}" >> ./GCS_KEY.json
+        echo "${{ secrets.GCS_KEY }}" >> ./GCS_Key.json
       shell: bash
 
     # GCS key 파일 생성
