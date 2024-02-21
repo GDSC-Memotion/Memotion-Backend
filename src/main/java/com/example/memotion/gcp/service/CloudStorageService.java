@@ -22,12 +22,13 @@ public class CloudStorageService {
     private String PROJECT_ID;
 //    // The ID of your GCS bucket
 //
-//    @Value("${gcp.bucket.name}")
-//    private String BUCKET_NAME;
+    @Value("${gcp.bucket.name}")
+    private String BUCKET_NAME;
 //
     @Value("${gcp.config.file}")
     private String gcpConfigFile;
 
+    private final String GCS_API_URI = "https://storage.googleapis.com/";
 
     public String uploadMultipartFileToCloudStorage(MultipartFile imageFile) throws IOException {
         // !!!!!!!!!!!이미지 업로드 관련 부분!!!!!!!!!!!!!!!
@@ -46,8 +47,8 @@ public class CloudStorageService {
                 imageFile.getInputStream()
         );
 
-        return "https://storage.cloud.google.com/" +
-                "memotion/" +
+        return GCS_API_URI +
+                BUCKET_NAME + "/" +
                 uuid;
     }
 }
