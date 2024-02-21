@@ -63,6 +63,11 @@ public class DiaryService {
                 .createdAt(createdAt)
                 .build();
 
+        if (images == null) {
+            Diary savedDiary = diaryRepository.save(diary);
+            return new CreateDiaryRes(savedDiary.getId(), "anger");
+        }
+
         List<String> imageUris = new ArrayList<>();
 
         for (MultipartFile image : images) {
@@ -70,7 +75,6 @@ public class DiaryService {
             String imageUri = saveFileToLocalServer(image);
             imageUris.add(imageUri);
         }
-
         Diary savedDiary = diaryRepository.save(diary);
 
         imageUris.stream()

@@ -35,7 +35,7 @@ public class DiaryController {
 
     @PostMapping
     public BaseResponse<CreateDiaryRes> createDiary(@RequestPart("info") CreateDiaryReq createDiaryReq,
-                                                    @RequestPart("images") List<MultipartFile> images) throws IOException {
+                                                    @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
         return new BaseResponse(diaryService.addDiary(createDiaryReq, images));
     }
 
