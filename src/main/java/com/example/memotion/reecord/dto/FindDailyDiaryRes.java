@@ -4,7 +4,6 @@ import com.example.memotion.reecord.domain.Diary;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -13,22 +12,22 @@ public class FindDailyDiaryRes {
     private String description;
     private Long memberId;
     private String mood;
-    private LocalDateTime createdAt;
+    private String createdAt;
     private List<String> imageUris;
 
-    public static FindDailyDiaryRes of(Diary diary, List<String> imageUris, String mood) {
+    public static FindDailyDiaryRes of(Diary diary, List<String> imageUris, String mood, String createdAt) {
         return FindDailyDiaryRes.builder()
                 .id(diary.getId())
                 .memberId(diary.getMember().getId())
                 .imageUris(imageUris)
                 .description(diary.getDescription())
                 .mood(mood)
-                .createdAt(diary.getCreatedAt())
+                .createdAt(createdAt)
                 .build();
     }
     @Builder
 
-    public FindDailyDiaryRes(Long id, String description, Long memberId, String mood, LocalDateTime createdAt, List<String> imageUris) {
+    public FindDailyDiaryRes(Long id, String description, Long memberId, String mood, String createdAt, List<String> imageUris) {
         this.id = id;
         this.description = description;
         this.memberId = memberId;

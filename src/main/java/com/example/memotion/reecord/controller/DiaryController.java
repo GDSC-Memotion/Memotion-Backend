@@ -63,7 +63,7 @@ public class DiaryController {
     @PutMapping("/{diaryId}")
     public BaseResponse<ModifyDiaryRes> modifyDiary(@PathVariable("diaryId") Long diaryId,
                                                     @RequestPart("info") ModifyDiaryReq modifyDiaryReq,
-                                                    @RequestPart("images") List<MultipartFile> images) {
+                                                    @RequestPart("images") List<MultipartFile> images) throws IOException {
         return new BaseResponse<>(diaryService.modifyDiary(diaryId,modifyDiaryReq, images));
     }
 }

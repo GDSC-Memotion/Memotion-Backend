@@ -114,6 +114,18 @@ public class DiaryService {
                 .toList();
         return LocalDateTime.of(dates.get(0), dates.get(1), dates.get(2), times.get(0), times.get(1), times.get(2));
     }
+    private String localDateTime2StringTime(LocalDateTime time) {
+        //Time Structure : YYYY.MM.DD MON HH:MM:SS
+        StringBuilder sb = new StringBuilder();
+        sb.append(time.getYear()).append(".")
+                .append(time.getMonth().getValue()).append(".")
+                .append(time.getDayOfMonth()).append(" ")
+                .append(time.getDayOfWeek().toString().substring(0, 3)).append(" ")
+                .append(time.getHour()).append(":")
+                .append(time.getMinute()).append(":")
+                .append(time.getSecond());
+        return sb.toString();
+    }
 
     @Transactional(readOnly = true)
     public List<FindDailyDiaryRes> findDailyDiary(String period) {
@@ -127,7 +139,7 @@ public class DiaryService {
             List<String> imageUris = diary.getImages().stream()
                     .map(diaryImage ->
                             diaryImage.getUri()).toList();
-            result.add(FindDailyDiaryRes.of(diary, imageUris, "anger"));
+            result.add(FindDailyDiaryRes.of(diary, imageUris, "anger", localDateTime2StringTime(diary.getCreatedAt())));
         }
         return result;
     }
@@ -185,7 +197,7 @@ public class DiaryService {
                 .analysisResult(diaryAnalysisResultDTO)
                 .youtubeUri("https://www.youtube.com/watch?v=BBdC1rl5sKY&pp=ygUa7Jyk7ZWYIOyCrOqxtOydmCDsp4Dtj4nshKA%3D")
                 .youtubeMusicUri("https://music.youtube.com/watch?v=BBdC1rl5sKY&pp=ygUa7Jyk7ZWYIOyCrOqxtOydmCDsp4Dtj4nshKA%3D")
-                .createdAt(diary.getCreatedAt())
+                .createdAt(localDateTime2StringTime(diary.getCreatedAt()))
                 .emotion("anger")
                 .build();
     }
@@ -199,39 +211,40 @@ public class DiaryService {
         return new DeleteDiaryRes(diary.getId());
     }
 
-    public ModifyDiaryRes modifyDiary(Long diaryId, ModifyDiaryReq modifyDiaryReq, List<MultipartFile> images) {
+    public ModifyDiaryRes modifyDiary(Long diaryId, ModifyDiaryReq modifyDiaryReq, List<MultipartFile> images) throws IOException {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(NotFoundDiaryException::new);
 
         //기존 이미지 경로 찾기
         List<Image> presentImages = diary.getImages();
-
-        //기존 경로에 있는 이미지 삭제
-        for (Image image : presentImages) {
-            //UUID가 포함된 파일이름을 디코딩해줍니다.
-            File file = new File(image.getUri());
-            boolean result = file.delete();
-            log.info("DELETE IMAGE: " + file.getAbsolutePath());
-            log.info("RESULT : " + result);
-        }
+        //TODO : 버킷에서 img 삭제
+//        //기존 경로에 있는 이미지 삭제
+//        for (Image image : presentImages) {
+//            //UUID가 포함된 파일이름을 디코딩해줍니다.
+//            File file = new File(image.getUri());
+//            boolean result = file.delete();
+//            log.info("DELETE IMAGE: " + file.getAbsolutePath());
+//            log.info("RESULT : " + result);
+//        }
 
         //DB 기록 삭제
         imageRepository.deleteImageByDiary(diary);
 
         List<String> imageUris = new ArrayList<>();
-
-        //새 사진 로컬 저장
-        for (MultipartFile image : images) {
-//            String imageUri = cloudStorageService.uploadMultipartFileToCloudStorage(image);
-            String imageUri = saveFileToLocalServer(image);
-            imageUris.add(imageUri);
-        }
+        if (images != null) {
+            //새 사진 로컬 저장
+            for (MultipartFile image : images) {
+                String imageUri = cloudStorageService.uploadMultipartFileToCloudStorage(image);
+//            String imageUri = saveFileToLocalServer(image);
+                imageUris.add(imageUri);
+            }
 
         //새 사진 경로 DB 추가
         imageUris.stream()
                 .map(uri -> new Image(uri, diary))
                 .forEach(image -> imageRepository.save(image));
         diary.setDescription(modifyDiaryReq.getDescription());
+        }
 
         return new ModifyDiaryRes(diary.getId());
     }

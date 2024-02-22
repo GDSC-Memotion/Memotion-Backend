@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -17,10 +16,10 @@ public class FindDiaryDetailRes {
     private String youtubeUri;
     private String youtubeMusicUri;
     private String emotion;
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     @Builder
-    public FindDiaryDetailRes(Long diaryId, List<String> imageUris, String description, DiaryAnalysisResultDTO analysisResult, String youtubeUri, String youtubeMusicUri, LocalDateTime createdAt, String emotion) {
+    public FindDiaryDetailRes(Long diaryId, List<String> imageUris, String description, DiaryAnalysisResultDTO analysisResult, String youtubeUri, String youtubeMusicUri, String createdAt, String emotion) {
         this.diaryId = diaryId;
         this.imageUris = imageUris;
         this.description = description;
