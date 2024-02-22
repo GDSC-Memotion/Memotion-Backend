@@ -35,10 +35,11 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -51,6 +52,8 @@ public class DiaryService {
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final CloudStorageService cloudStorageService;
+
+    private final String DATE_FORMAT = "yyyy.MM.dd EEE HH:mm:ss";
 
     public CreateDiaryRes addDiary(CreateDiaryReq createDiaryReq, List<MultipartFile> images) throws IOException {
         Member member = memberRepository.findById(1L)
@@ -104,27 +107,20 @@ public class DiaryService {
     }
 
     private LocalDateTime stringTime2LocalDateTime(String time) {
+        final int START_POINT = 12;
+        final int END_POINT = 13;
         //Time Structure : YYYY.MM.DD MON HH:MM:SS
-        String[] splitTime = time.split(" ");
-        List<Integer> dates = Arrays.stream(splitTime[0].split("\\."))
-                .map(Integer::parseInt)
-                .toList();
-        List<Integer> times = Arrays.stream(splitTime[2].split(":"))
-                .map(Integer::parseInt)
-                .toList();
-        return LocalDateTime.of(dates.get(0), dates.get(1), dates.get(2), times.get(0), times.get(1), times.get(2));
+        String partToConvert = time.substring(START_POINT, END_POINT + 1);
+        String convertedPart = partToConvert.toLowerCase();
+        String resultString = time.substring(0, START_POINT) + convertedPart + time.substring(END_POINT + 1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT).withLocale(Locale.ENGLISH);
+        return LocalDateTime.parse(resultString, formatter);
     }
     private String localDateTime2StringTime(LocalDateTime time) {
         //Time Structure : YYYY.MM.DD MON HH:MM:SS
-        StringBuilder sb = new StringBuilder();
-        sb.append(time.getYear()).append(".")
-                .append(time.getMonth().getValue()).append(".")
-                .append(time.getDayOfMonth()).append(" ")
-                .append(time.getDayOfWeek().toString().substring(0, 3)).append(" ")
-                .append(time.getHour()).append(":")
-                .append(time.getMinute()).append(":")
-                .append(time.getSecond());
-        return sb.toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
+                .withLocale(Locale.ENGLISH);
+        return time.format(formatter).toUpperCase(Locale.ENGLISH);
     }
 
     @Transactional(readOnly = true)
