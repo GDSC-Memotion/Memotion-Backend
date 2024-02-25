@@ -2,6 +2,7 @@ package com.example.memotion.reecord.service;
 
 import com.example.memotion.analysis.domain.Analysis;
 import com.example.memotion.analysis.repository.AnalysisRepository;
+import com.example.memotion.analysis.service.AnalysisService;
 import com.example.memotion.common.domain.STATUS;
 import com.example.memotion.common.exception.NotFoundDiaryException;
 import com.example.memotion.common.exception.NotFoundMemberException;
@@ -59,6 +60,7 @@ public class DiaryService {
     private final ImageRepository imageRepository;
     private final CloudStorageService cloudStorageService;
     private final AnalysisRepository analysisRepository;
+    private final AnalysisService analysisService;
 
     private final String DATE_FORMAT = "yyyy.MM.dd EEE HH:mm:ss";
 
@@ -91,8 +93,10 @@ public class DiaryService {
                 .map(uri -> new Image(uri, savedDiary))
                 .forEach(image -> imageRepository.save(image));
 
-        //TODO : 파이썬 서버와의 통신 및 분석 결과 저장 후 반환해야 함
-        return new CreateDiaryRes(savedDiary.getId(), "anger");
+        Analysis analysisResult = analysisService.getAnalysisResult(diary);
+        String maxEmotionName = getMaxEmotionName(analysisResult);
+
+        return new CreateDiaryRes(savedDiary.getId(), maxEmotionName);
     }
 
     private String saveFileToLocalServer(MultipartFile image) {
