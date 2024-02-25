@@ -1,5 +1,7 @@
 package com.example.memotion.reecord.service;
 
+import com.example.memotion.analysis.domain.Analysis;
+import com.example.memotion.analysis.repository.AnalysisRepository;
 import com.example.memotion.common.domain.STATUS;
 import com.example.memotion.common.exception.NotFoundDiaryException;
 import com.example.memotion.common.exception.NotFoundMemberException;
@@ -37,10 +39,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -52,6 +58,7 @@ public class DiaryService {
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final CloudStorageService cloudStorageService;
+    private final AnalysisRepository analysisRepository;
 
     private final String DATE_FORMAT = "yyyy.MM.dd EEE HH:mm:ss";
 
@@ -136,7 +143,9 @@ public class DiaryService {
             List<String> imageUris = diary.getImages().stream()
                     .map(diaryImage ->
                             diaryImage.getUri()).toList();
-            result.add(FindDailyDiaryRes.of(diary, imageUris, "anger", localDateTime2StringTime(diary.getCreatedAt())));
+            Analysis analysisByDiary = analysisRepository.findAnalysisByDiary(diary);
+            String maxEmotionName = getMaxEmotionName(analysisByDiary);
+            result.add(FindDailyDiaryRes.of(diary, imageUris, maxEmotionName, localDateTime2StringTime(diary.getCreatedAt())));
         }
         return result;
     }
@@ -163,6 +172,23 @@ public class DiaryService {
         }
 
         return new FindCalendarDiaryRes(emotions);
+    }
+
+    private String getMaxEmotionName(Analysis analysis) {
+
+        Map<Float, String> emotionRateMap = new HashMap<>();
+        emotionRateMap.put(analysis.getJoy(), "joy");
+        emotionRateMap.put(analysis.getNeutral(), "neutral");
+        emotionRateMap.put(analysis.getSadness(), "sadness");
+        emotionRateMap.put(analysis.getSurprise(), "surprise");
+        emotionRateMap.put(analysis.getAnger(), "anger");
+        emotionRateMap.put(analysis.getFear(), "fear");
+        emotionRateMap.put(analysis.getDisgust(), "disgust");
+
+        Set<Float> doubles = emotionRateMap.keySet();
+        Float maxKey = doubles.stream().max(Comparator.naturalOrder()).get();
+
+        return emotionRateMap.get(maxKey);
     }
 
     @Transactional(readOnly = true)
@@ -208,12 +234,11 @@ public class DiaryService {
         return new DeleteDiaryRes(diary.getId());
     }
 
-    public ModifyDiaryRes modifyDiary(Long diaryId, ModifyDiaryReq modifyDiaryReq, List<MultipartFile> images) throws IOException {
+    public ModifyDiaryRes modifyDiary(Long diaryId, ModifyDiaryReq modifyDiaryReq) throws IOException {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(NotFoundDiaryException::new);
 
         //기존 이미지 경로 찾기
-        List<Image> presentImages = diary.getImages();
         //TODO : 버킷에서 img 삭제
 //        //기존 경로에 있는 이미지 삭제
 //        for (Image image : presentImages) {
@@ -227,22 +252,7 @@ public class DiaryService {
         //DB 기록 삭제
         imageRepository.deleteImageByDiary(diary);
 
-        List<String> imageUris = new ArrayList<>();
-        if (images != null) {
-            //새 사진 로컬 저장
-            for (MultipartFile image : images) {
-                String imageUri = cloudStorageService.uploadMultipartFileToCloudStorage(image);
-//            String imageUri = saveFileToLocalServer(image);
-                imageUris.add(imageUri);
-            }
-
-        //새 사진 경로 DB 추가
-        imageUris.stream()
-                .map(uri -> new Image(uri, diary))
-                .forEach(image -> imageRepository.save(image));
         diary.setDescription(modifyDiaryReq.getDescription());
-        }
-
         return new ModifyDiaryRes(diary.getId());
     }
 

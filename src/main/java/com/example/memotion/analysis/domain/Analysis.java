@@ -11,8 +11,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "analysis")
 public class Analysis extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
