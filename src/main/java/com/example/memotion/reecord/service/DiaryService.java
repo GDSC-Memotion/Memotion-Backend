@@ -182,11 +182,10 @@ public class DiaryService {
 
 //        Map<Integer, String> emotions = new HashMap<>();
         log.info("size: " + emotions.size());
-
         for (DailyEmotionAvgDTO dailyEmotionAvgDTO : dailyEmotionAvgs) {
             log.info(dailyEmotionAvgDTO.getCreateDate());
             String day = dailyEmotionAvgDTO.getCreateDate().split("-")[2];
-            if (day.contains("yy"))
+            if (dailyEmotionAvgDTO.getCreateDate().contains("dd"))
                 continue;
             String maxEmotionName = dailyEmotionAvgDTO.getMaxEmotionName();
             emotions.add(Integer.parseInt(day), maxEmotionName);
