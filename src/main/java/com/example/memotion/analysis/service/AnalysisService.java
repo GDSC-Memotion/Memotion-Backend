@@ -62,7 +62,6 @@ public class AnalysisService {
             EmotionResponse emotionResponse = objectMapper.readValue(responseBody, EmotionResponse.class);
             System.out.println(emotionResponse);
             result.setEmotions(emotionResponse);
-            analysisRepository.save(result);
             log.info("감정분석 완료");
         } catch (Exception e) {
             log.error("감정분석 간 에러 발생");
