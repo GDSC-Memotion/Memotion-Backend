@@ -1,6 +1,5 @@
 package com.example.memotion.reecord.domain;
 
-import com.example.memotion.common.domain.BaseEntity;
 import com.example.memotion.common.domain.STATUS;
 import com.example.memotion.image.domain.Image;
 import com.example.memotion.member.domain.Member;
@@ -19,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
 @Table(name = "diary")
 @ToString
 @NoArgsConstructor
-public class Diary extends BaseEntity {
+public class Diary {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,4 +55,8 @@ public class Diary extends BaseEntity {
         this.member = member;
         this.setCreatedAt(createdAt);
     }
+
+    private LocalDateTime createdAt;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 }
