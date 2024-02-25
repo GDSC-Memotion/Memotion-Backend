@@ -7,6 +7,8 @@ import com.example.memotion.common.domain.STATUS;
 import com.example.memotion.common.exception.NotFoundDiaryException;
 import com.example.memotion.common.exception.NotFoundMemberException;
 import com.example.memotion.gcp.service.CloudStorageService;
+import com.example.memotion.heealing.domain.Healing;
+import com.example.memotion.heealing.repository.HealingRepository;
 import com.example.memotion.image.domain.Image;
 import com.example.memotion.image.repository.ImageRepository;
 import com.example.memotion.member.domain.Member;
@@ -61,6 +63,7 @@ public class DiaryService {
     private final CloudStorageService cloudStorageService;
     private final AnalysisRepository analysisRepository;
     private final AnalysisService analysisService;
+    private final HealingRepository healingRepository;
 
     private final String DATE_FORMAT = "yyyy.MM.dd EEE HH:mm:ss";
 
@@ -199,34 +202,49 @@ public class DiaryService {
     public FindDiaryDetailRes findDetailDiary(Long diaryId) {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(NotFoundDiaryException::new);
+        Analysis analysis = analysisRepository.findAnalysisByDiary(diary);
 
         List<Image> diaryImages = diary.getImages();
         List<String> imageUris = diaryImages.stream()
                 .map(Image::getUri)
                 .toList();
 
-        //TODO : 로직 수정 필요
         DiaryAnalysisResultDTO diaryAnalysisResultDTO = DiaryAnalysisResultDTO.builder()
-                .joy(0.0)
-                .anger(100.0)
-                .fear(0.0)
-                .neutral(0.0)
-                .disgust(0.0)
-                .surprise(0.0)
-                .sadness(0.0)
+                .joy(analysis.getJoy())
+                .anger(analysis.getAnger())
+                .fear(analysis.getFear())
+                .neutral(analysis.getNeutral())
+                .disgust(analysis.getDisgust())
+                .surprise(analysis.getSurprise())
+                .sadness(analysis.getSadness())
                 .build();
+        String maxEmotionName = getMaxEmotionName(analysis);
+        Map<String, Long> healingMap = new HashMap<>(initHealingMap());
+        Healing healing = healingRepository.findById(healingMap.get(maxEmotionName)).get();
 
-        // TODO : 유튜브 API 수정 필요
+        final String YOUTUBE_PREFIX = "https://www.youtube.com/watch?v=";
+        final String YOUTUBE_MUSIC_PREFIX = "https://music.youtube.com/watch?v=";
+
         return FindDiaryDetailRes.builder()
                 .diaryId(diary.getId())
                 .description(diary.getDescription())
                 .imageUris(imageUris)
                 .analysisResult(diaryAnalysisResultDTO)
-                .youtubeUri("https://www.youtube.com/watch?v=BBdC1rl5sKY&pp=ygUa7Jyk7ZWYIOyCrOqxtOydmCDsp4Dtj4nshKA%3D")
-                .youtubeMusicUri("https://music.youtube.com/watch?v=BBdC1rl5sKY&pp=ygUa7Jyk7ZWYIOyCrOqxtOydmCDsp4Dtj4nshKA%3D")
+                .youtubeUri(YOUTUBE_PREFIX + healing.getMusicUrl())
+                .youtubeMusicUri(YOUTUBE_MUSIC_PREFIX + healing.getMusicUrl())
                 .createdAt(localDateTime2StringTime(diary.getCreatedAt()))
-                .emotion("anger")
+                .emotion(maxEmotionName)
                 .build();
+    }
+
+    private Map<String, Long> initHealingMap() {
+        return Map.of("anger",1L,
+                "disgust",2L,
+                "fear",3L,
+                "joy",4L,
+                "neutral",5L,
+                "sadness",6L,
+                "surprise",7L);
     }
 
     public DeleteDiaryRes deleteDiary(Long diaryId) {
