@@ -4,6 +4,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.io.InputStream;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class CloudStorageService {
 
 //    private final Storage storage;
@@ -31,6 +33,8 @@ public class CloudStorageService {
     private final String GCS_API_URI = "https://storage.googleapis.com/";
 
     public String uploadMultipartFileToCloudStorage(MultipartFile imageFile) throws IOException {
+        log.info("클라우드 스토리지 업로드 시작");
+
         // !!!!!!!!!!!이미지 업로드 관련 부분!!!!!!!!!!!!!!!
         String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
         String ext = imageFile.getContentType(); // 파일의 형식 ex) JPG
@@ -47,6 +51,7 @@ public class CloudStorageService {
                 imageFile.getInputStream()
         );
 
+        log.info("클라우드 스토리지 업로드 종료");
         return GCS_API_URI +
                 BUCKET_NAME + "/" +
                 uuid;

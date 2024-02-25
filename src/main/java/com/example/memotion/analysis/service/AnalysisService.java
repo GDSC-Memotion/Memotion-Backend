@@ -6,6 +6,7 @@ import com.example.memotion.analysis.repository.AnalysisRepository;
 import com.example.memotion.reecord.domain.Diary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AnalysisService {
@@ -24,6 +26,7 @@ public class AnalysisService {
     private String ANALYSIS_SERVER_URI;
 
     public Analysis getAnalysisResult(Diary savedDiary) {
+        log.info("감정분석 분석 시작");
         // REST API의 URL
         String url = ANALYSIS_SERVER_URI + "/emotion";
 
@@ -53,13 +56,16 @@ public class AnalysisService {
         Analysis result = new Analysis();
         result.setMember(savedDiary.getMember());
         result.setDiary(savedDiary);
+
         try {
             // JSON 문자열을 객체로 변환
             EmotionResponse emotionResponse = objectMapper.readValue(responseBody, EmotionResponse.class);
             System.out.println(emotionResponse);
             result.setEmotions(emotionResponse);
             analysisRepository.save(result);
+            log.info("감정분석 완료");
         } catch (Exception e) {
+            log.error("감정분석 간 에러 발생");
             e.printStackTrace();
         }
         System.out.println(result);
