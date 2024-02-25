@@ -13,10 +13,10 @@ import java.util.Optional;
 
 @Repository
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
-    @Query(value = "SELECT new com.example.memotion.reecord.dto.DailyEmotionAvgDTO(FORMAT(d.createdAt, 'yyyy-MM-dd'), AVG(a.joy), AVG(a.neutral), AVG(a.sadness), AVG(a.surprise), AVG(a.anger), AVG(a.fear), AVG(a.disgust)) " +
+    @Query(value = "SELECT new com.example.memotion.reecord.dto.DailyEmotionAvgDTO(FUNCTION('DATE_FORMAT', d.createdAt, '%Y-%m-%d'), AVG(a.joy), AVG(a.neutral), AVG(a.sadness), AVG(a.surprise), AVG(a.anger), AVG(a.fear), AVG(a.disgust)) " +
             "FROM Analysis a JOIN a.diary d " +
             "WHERE d.createdAt >= :start AND d.createdAt < :end AND d.status = 'ACTIVATE'" +
-            "GROUP BY FORMAT(d.createdAt, 'yyyy-MM-dd') ")
+            "GROUP BY FUNCTION('DATE_FORMAT', d.createdAt, '%Y-%m-%d') ")
     List<DailyEmotionAvgDTO> findDiaryByCalendar(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Override
