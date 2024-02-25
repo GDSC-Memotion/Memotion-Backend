@@ -75,9 +75,12 @@ public class DiaryService {
                 .createdAt(createdAt)
                 .build();
 
+        Analysis analysisResult = analysisService.getAnalysisResult(diary);
+        String maxEmotionName = getMaxEmotionName(analysisResult);
+
         if (images == null) {
             Diary savedDiary = diaryRepository.save(diary);
-            return new CreateDiaryRes(savedDiary.getId(), "anger");
+            return new CreateDiaryRes(savedDiary.getId(), maxEmotionName);
         }
 
         List<String> imageUris = new ArrayList<>();
@@ -92,9 +95,6 @@ public class DiaryService {
         imageUris.stream()
                 .map(uri -> new Image(uri, savedDiary))
                 .forEach(image -> imageRepository.save(image));
-
-        Analysis analysisResult = analysisService.getAnalysisResult(diary);
-        String maxEmotionName = getMaxEmotionName(analysisResult);
 
         return new CreateDiaryRes(savedDiary.getId(), maxEmotionName);
     }
