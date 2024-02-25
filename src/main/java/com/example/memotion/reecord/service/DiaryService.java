@@ -130,6 +130,7 @@ public class DiaryService {
         log.debug(localdate.toString());
         List<Diary> dailyDiaries = diaryRepository.findAll().stream()
                 .filter(diary -> localdate.isEqual(diary.getCreatedAt().toLocalDate()))
+                .filter(diary -> diary.getStatus().equals(STATUS.ACTIVATE))
                 .toList();
         for (Diary diary : dailyDiaries) {
             List<String> imageUris = diary.getImages().stream()
