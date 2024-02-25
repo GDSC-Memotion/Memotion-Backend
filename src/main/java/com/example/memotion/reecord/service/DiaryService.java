@@ -80,7 +80,8 @@ public class DiaryService {
 
         Analysis analysisResult = analysisService.getAnalysisResult(diary);
         String maxEmotionName = getMaxEmotionName(analysisResult);
-
+        log.info(images.toString());
+        log.info(String.valueOf(images.size()));
         if (images == null) {
             Diary savedDiary = diaryRepository.save(diary);
             return new CreateDiaryRes(savedDiary.getId(), maxEmotionName);
@@ -91,6 +92,9 @@ public class DiaryService {
         for (MultipartFile image : images) {
             String imageUri = cloudStorageService.uploadMultipartFileToCloudStorage(image);
 //            String imageUri = saveFileToLocalServer(image);
+            if (imageUri == null) {
+                continue;
+            }
             imageUris.add(imageUri);
         }
         Diary savedDiary = diaryRepository.save(diary);

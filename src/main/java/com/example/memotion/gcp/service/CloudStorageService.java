@@ -33,6 +33,9 @@ public class CloudStorageService {
     private final String GCS_API_URI = "https://storage.googleapis.com/";
 
     public String uploadMultipartFileToCloudStorage(MultipartFile imageFile) throws IOException {
+        if (imageFile == null) {
+            return null;
+        }
         log.info("클라우드 스토리지 업로드 시작");
 
         // !!!!!!!!!!!이미지 업로드 관련 부분!!!!!!!!!!!!!!!
