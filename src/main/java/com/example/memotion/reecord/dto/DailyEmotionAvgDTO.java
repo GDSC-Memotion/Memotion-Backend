@@ -37,4 +37,16 @@ public class DailyEmotionAvgDTO {
 
         return emotionRateMap.get(maxKey);
     }
+
+
+    public DailyEmotionAvgDTO(Object createDate, double joyAvg, double neutralAvg, double sadnessAvg, double surpriseAvg, double angerAvg, double fearAvg, double disgustAvg) {
+        this.createDate = (String)createDate;
+        this.joyAvg = joyAvg;
+        this.neutralAvg = neutralAvg;
+        this.sadnessAvg = sadnessAvg;
+        this.surpriseAvg = surpriseAvg;
+        this.angerAvg = angerAvg;
+        this.fearAvg = fearAvg;
+        this.disgustAvg = disgustAvg;
+    }
 }
