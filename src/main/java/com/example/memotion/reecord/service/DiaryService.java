@@ -82,9 +82,6 @@ public class DiaryService {
         Analysis analysisResult = analysisService.getAnalysisResult(diary);
         String maxEmotionName = getMaxEmotionName(analysisResult);
 
-        log.info(images.toString());
-        log.info(String.valueOf(images.size()));
-
         if (images == null) {
             analysisRepository.save(analysisResult);
             Diary savedDiary = diaryRepository.save(diary);
