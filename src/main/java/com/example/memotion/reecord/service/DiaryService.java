@@ -83,8 +83,9 @@ public class DiaryService {
         String maxEmotionName = getMaxEmotionName(analysisResult);
 
         if (images == null) {
-            analysisRepository.save(analysisResult);
             Diary savedDiary = diaryRepository.save(diary);
+            analysisResult.setDiary(savedDiary);
+            analysisRepository.save(analysisResult);
             return new CreateDiaryRes(savedDiary.getId(), maxEmotionName);
         }
 
@@ -105,6 +106,7 @@ public class DiaryService {
                 .map(uri -> new Image(uri, savedDiary))
                 .forEach(image -> imageRepository.save(image));
 
+        analysisResult.setDiary(diary);
         analysisRepository.save(analysisResult);
 
         return new CreateDiaryRes(savedDiary.getId(), maxEmotionName);

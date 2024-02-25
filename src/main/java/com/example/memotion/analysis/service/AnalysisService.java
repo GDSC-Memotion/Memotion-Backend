@@ -20,8 +20,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class AnalysisService {
-    private final AnalysisRepository analysisRepository;
-
     @Value("${fast-api.host}")
     private String ANALYSIS_SERVER_URI;
 
