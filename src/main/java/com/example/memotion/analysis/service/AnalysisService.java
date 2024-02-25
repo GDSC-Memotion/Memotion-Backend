@@ -6,6 +6,7 @@ import com.example.memotion.analysis.repository.AnalysisRepository;
 import com.example.memotion.reecord.domain.Diary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,7 +19,9 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class AnalysisService {
     private final AnalysisRepository analysisRepository;
-    private final String ANALYSIS_SERVER_URI = "http://34.47.97.138:8000";
+
+    @Value("${fast-api.host}")
+    private String ANALYSIS_SERVER_URI;
 
     public Analysis getAnalysisResult(Diary savedDiary) {
         // REST API의 URL
