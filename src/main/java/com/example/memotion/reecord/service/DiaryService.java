@@ -186,6 +186,8 @@ public class DiaryService {
         for (DailyEmotionAvgDTO dailyEmotionAvgDTO : dailyEmotionAvgs) {
             log.info(dailyEmotionAvgDTO.getCreateDate());
             String day = dailyEmotionAvgDTO.getCreateDate().split("-")[2];
+            if (day.contains("yy"))
+                continue;
             String maxEmotionName = dailyEmotionAvgDTO.getMaxEmotionName();
             emotions.add(Integer.parseInt(day), maxEmotionName);
         }
